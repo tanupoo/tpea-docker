@@ -1,0 +1,45 @@
+version: '3.7'
+
+networks:
+  default:
+
+services:
+
+  chronyd:
+    image: tanupoo/chrony:3.5.1-r0
+    hostname: chronyd
+    restart: always
+    privileged: true
+    networks:
+      - default
+    ports:
+      - "123:123"
+    volumes:
+      - ./chronyd/etc:/chrony
+    command: /usr/sbin/chronyd -r -s -f /chrony/chrony.conf -d
+
+  tpeahttpd:
+    build: ./tpeahttpd
+    hostname: tpeahttpd
+    restart: always
+    networks:
+      - default
+    ports:
+      - "8843:8843"
+    volumes:
+      - ./work:/tpea/work
+      - ./tpeahttpd/etc:/tpea/etc
+    command: /tpea/tpea-httpd.py -m /tpea/work/msg.log -c /tpea/etc/server-cert.pem -a 0.0.0.0 -a 0.0.0.0
+
+  tpeasmtpd:
+    build: ./tpeasmtpd
+    hostname: tpeasmtpd
+    restart: always
+    networks:
+      - default
+    ports:
+      - "8825:8825"
+    volumes:
+      - ./work:/tpea/work
+    command: /tpea/tpea-smtpd.py -m /tpea/work/msg.log
+
