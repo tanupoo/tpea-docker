@@ -13,7 +13,7 @@ services:
     networks:
       - default
     ports:
-      - "123:123"
+      - "123:123/udp"
     volumes:
       - ./chronyd/etc:/chrony
     command: /usr/sbin/chronyd -r -s -f /chrony/chrony.conf -d
